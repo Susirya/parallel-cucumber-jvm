@@ -14,11 +14,11 @@ public class RuntimeConfiguration {
 	public final Path threadTimelineReportPath;
 	public final Path rerunReportReportPath;
 	public final boolean htmlReportRequired;
-	public final boolean jsonReportRequired;
+	public boolean jsonReportRequired;
 	public final boolean threadTimelineReportRequired;
 	public final boolean rerunReportRequired;
 	public final int rerunAttemptsCount;
-	public Path flakyReportPath;
+	public final Path flakyReportPath;
 	public final int flakyMaxCount;
     public final boolean dynamicFeatureDistribution;
 
@@ -45,4 +45,7 @@ public class RuntimeConfiguration {
         this.dynamicFeatureDistribution = dynamicFeatureDistribution;
 	}
 
+	public void setJsonReportRequired(boolean jsonReportRequired) {
+		this.jsonReportRequired = jsonReportRequired;
+	}
 }

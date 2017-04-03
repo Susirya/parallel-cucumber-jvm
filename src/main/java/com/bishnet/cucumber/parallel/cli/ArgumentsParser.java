@@ -56,6 +56,7 @@ public class ArgumentsParser {
 					threadTimelineReportPath = Paths.get(pluginArgsArray[1]);
 				} else if (pluginArgsArray[0].equals("rerun")) {
 					rerunReportRequired = true;
+					jsonReportRequired = true;
 					rerunReportReportPath = Paths.get(pluginArgsArray[1]);
 				} else if (pluginArgsArray[0].equals("rerun-count")) {
 					rerunAttemptsCount = Integer.parseInt(pluginArgsArray[1]);

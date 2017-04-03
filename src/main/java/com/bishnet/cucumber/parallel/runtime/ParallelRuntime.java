@@ -55,13 +55,22 @@ public class ParallelRuntime {
 
 	private byte runWithRerunFailed(List<CucumberFeature> features) throws IOException, InterruptedException {
 		List<Path> rerunFiles = splitFeaturesIntoRerunFiles(features);
+		if (rerunFiles.isEmpty()) {
+			System.out.println(
+					String.format("None of the features or scenarios at %s matched the filters, or no scenarios found.",
+							runtimeConfiguration.featurePaths));
+			return 0;
+		}
 		byte result = runFeatures(rerunFiles);
 		if (result != 0 && runtimeConfiguration.rerunReportRequired) {
 			int failedCount = RerunUtils.countScenariosInRerunFile(runtimeConfiguration.rerunReportReportPath);
 			if (failedCount > runtimeConfiguration.flakyMaxCount) {
+				System.out.println("Too many flaky tests! Tests failed. Aborting rerun flaky.");
 				return result;
 			}
+			runtimeConfiguration.setJsonReportRequired(true);
 			while (result != 0 && triedRerun++ <= runtimeConfiguration.rerunAttemptsCount) {
+				System.out.println("Trying to rerun flaky tests. Attempt " + triedRerun);
 				rerunFiles.clear();
 				rerunFiles.add(runtimeConfiguration.rerunReportReportPath);
 				result = runFeatures(rerunFiles);
@@ -116,6 +125,7 @@ public class ParallelRuntime {
 			ThreadExecutionReporter threadExecutionReporter = new ThreadExecutionReporter();
 			threadExecutionReporter.writeReport(threadExecutionRecorder.getRecordedData(), runtimeConfiguration.threadTimelineReportPath);
 		}
+
 
 		return result;
 	}

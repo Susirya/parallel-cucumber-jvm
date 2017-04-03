@@ -18,9 +18,10 @@ public class CucumberRuntimeExecutorTest {
 	public void shouldReturnZeroExitCodeWhenAllUnderlyingRuntimesReturnZero() throws InterruptedException, IOException {
 		byte[] exitCodes = new byte[] { 0, 0 };
 		boolean[] shouldThrowExceptions = new boolean[] { false, false };
-		FakeCucumberRuntimeFactory runtimeFactory = new FakeCucumberRuntimeFactory(exitCodes, shouldThrowExceptions);
-		CucumberRuntimeExecutor runtimeExecutor = new CucumberRuntimeExecutor(runtimeFactory, getRerunFiles(),
-				getRuntimeConfiguration(false, false, false));
+		int numberOfThreads = 2;
+		List<String> arguments = setFeaturePath();
+		CucumberRuntimeExecutor runtimeExecutor =
+				getRuntimeExecutor(exitCodes, shouldThrowExceptions, false, false, arguments, numberOfThreads, false);
 		assertThat(runtimeExecutor.run()).isEqualTo((byte) 0);
 	}
 
@@ -28,9 +29,10 @@ public class CucumberRuntimeExecutorTest {
 	public void shouldReturnExitCodeOfOneWhenOneUnderlyingRuntimeReturnsOne() throws InterruptedException, IOException {
 		byte[] exitCodes = new byte[] { 0, 1 };
 		boolean[] shouldThrowExceptions = new boolean[] { false, false };
-		FakeCucumberRuntimeFactory runtimeFactory = new FakeCucumberRuntimeFactory(exitCodes, shouldThrowExceptions);
-		CucumberRuntimeExecutor runtimeExecutor = new CucumberRuntimeExecutor(runtimeFactory, getRerunFiles(),
-				getRuntimeConfiguration(false, false, false));
+		int numberOfThreads = 2;
+		List<String> arguments = setFeaturePath();
+		CucumberRuntimeExecutor runtimeExecutor =
+				getRuntimeExecutor(exitCodes, shouldThrowExceptions, false, false, arguments, numberOfThreads, false);
 		assertThat(runtimeExecutor.run()).isEqualTo((byte) 1);
 	}
 
@@ -38,9 +40,10 @@ public class CucumberRuntimeExecutorTest {
 	public void shouldReturnExitCodeOfOneWhenAllUnderlyingRuntimesReturnOne() throws InterruptedException, IOException {
 		byte[] exitCodes = new byte[] { 1, 1 };
 		boolean[] shouldThrowExceptions = new boolean[] { false, false };
-		FakeCucumberRuntimeFactory runtimeFactory = new FakeCucumberRuntimeFactory(exitCodes, shouldThrowExceptions);
-		CucumberRuntimeExecutor runtimeExecutor = new CucumberRuntimeExecutor(runtimeFactory, getRerunFiles(),
-				getRuntimeConfiguration(false, false, false));
+		int numberOfThreads = 2;
+		List<String> arguments = setFeaturePath();
+		CucumberRuntimeExecutor runtimeExecutor =
+				getRuntimeExecutor(exitCodes, shouldThrowExceptions, false, false, arguments, numberOfThreads, false);
 		assertThat(runtimeExecutor.run()).isEqualTo((byte) 1);
 	}
 
@@ -48,57 +51,145 @@ public class CucumberRuntimeExecutorTest {
 	public void shouldThrowCucumberExceptionWhenOneUnderlyingRuntimeDoes() throws InterruptedException, IOException {
 		byte[] exitCodes = new byte[] { 0, 0 };
 		boolean[] shouldThrowExceptions = new boolean[] { false, true };
-		FakeCucumberRuntimeFactory runtimeFactory = new FakeCucumberRuntimeFactory(exitCodes, shouldThrowExceptions);
-		CucumberRuntimeExecutor runtimeExecutor = new CucumberRuntimeExecutor(runtimeFactory, getRerunFiles(),
-				getRuntimeConfiguration(false, false, false));
+		int numberOfThreads = 2;
+		List<String> arguments = setFeaturePath();
+		CucumberRuntimeExecutor runtimeExecutor =
+				getRuntimeExecutor(exitCodes, shouldThrowExceptions, false, false, arguments, numberOfThreads, false);
 		assertThat(runtimeExecutor.run()).isEqualTo((byte) 0);
 	}
 
 	@Test
-	public void shouldReturnANumberOfHtmlReportsEqualToTheNumberOfRerunFiles() throws InterruptedException, IOException {
+	public void shouldReturnANumberOfRerunFilesEqualToTheNumberOfThreadsIfTheDynamicDistributionOptionIsNotEnabled()
+			throws InterruptedException, IOException {
+		byte[] exitCodes = new byte[] { 0 };
+		boolean[] shouldThrowExceptions = new boolean[] { false };
+		int numberOfThreads = 1;
+		List<String> arguments = setFeaturePath();
+		RuntimeConfiguration runtimeConfiguration = getRuntimeConfiguration(false, true, false, arguments, numberOfThreads, false);
+		List<Path> rerunFiles = getRerunFiles(runtimeConfiguration);
+		FakeCucumberRuntimeFactory runtimeFactory =
+				new FakeCucumberRuntimeFactory(exitCodes, shouldThrowExceptions, runtimeConfiguration);
+		CucumberRuntimeExecutor runtimeExecutor = new CucumberRuntimeExecutor(runtimeFactory, rerunFiles, runtimeConfiguration);
+		runtimeExecutor.run();
+		assertThat(rerunFiles.size()).isEqualTo(numberOfThreads);
+	}
+
+	@Test
+	public void shouldReturnANumberOfRerunFilesEqualToTheNumberOfThreadsIfTheDynamicDistributionOptionIsEnabled()
+			throws InterruptedException, IOException {
 		byte[] exitCodes = new byte[] { 0, 0 };
 		boolean[] shouldThrowExceptions = new boolean[] { false, false };
-		FakeCucumberRuntimeFactory runtimeFactory = new FakeCucumberRuntimeFactory(exitCodes, shouldThrowExceptions);
-		List<Path> rerunFiles = getRerunFiles();
-		CucumberRuntimeExecutor runtimeExecutor = new CucumberRuntimeExecutor(runtimeFactory, rerunFiles,
-				getRuntimeConfiguration(false, true, false));
+		int numberOfThreads = 1;
+		List<String> arguments = setFeaturePath();
+		RuntimeConfiguration runtimeConfiguration = getRuntimeConfiguration(false, true, false, arguments, numberOfThreads, true);
+		List<Path> rerunFiles = getRerunFiles(runtimeConfiguration);
+		FakeCucumberRuntimeFactory runtimeFactory =
+				new FakeCucumberRuntimeFactory(exitCodes, shouldThrowExceptions, runtimeConfiguration);
+		CucumberRuntimeExecutor runtimeExecutor = new CucumberRuntimeExecutor(runtimeFactory, rerunFiles, runtimeConfiguration);
+		runtimeExecutor.run();
+		assertThat(rerunFiles.size()).isNotEqualTo(numberOfThreads);
+		assertThat(rerunFiles.size()).isEqualTo(arguments.size());
+	}
+
+	@Test
+	public void shouldReturnANumberOfHtmlReportsEqualToTheNumberOfRerunFilesIfDynamicDistributionIsDisabled()
+			throws InterruptedException, IOException {
+		byte[] exitCodes = new byte[] { 0, 0 };
+		boolean[] shouldThrowExceptions = new boolean[] { false, false };
+		int numberOfThreads = 1;
+		List<String> arguments = setFeaturePath();
+		RuntimeConfiguration runtimeConfiguration = getRuntimeConfiguration(false, true, false, arguments, numberOfThreads, false);
+		List<Path> rerunFiles = getRerunFiles(runtimeConfiguration);
+		FakeCucumberRuntimeFactory runtimeFactory =
+				new FakeCucumberRuntimeFactory(exitCodes, shouldThrowExceptions, runtimeConfiguration);
+		CucumberRuntimeExecutor runtimeExecutor = new CucumberRuntimeExecutor(runtimeFactory, rerunFiles, runtimeConfiguration);
 		runtimeExecutor.run();
 		assertThat(runtimeExecutor.getHtmlReports().size()).isEqualTo(rerunFiles.size());
+		assertThat(runtimeExecutor.getHtmlReports().size()).isEqualTo(numberOfThreads);
 	}
 
 	@Test
-	public void shouldReturnANumberOfJsonReportsEqualToTheNumberOfRerunFiles() throws InterruptedException, IOException {
+	public void shouldReturnANumberOfJsonReportsEqualToTheNumberOfRerunFilesIfDynamicDistributionIsDisabled()
+			throws InterruptedException, IOException {
 		byte[] exitCodes = new byte[] { 0, 0 };
 		boolean[] shouldThrowExceptions = new boolean[] { false, false };
-		FakeCucumberRuntimeFactory runtimeFactory = new FakeCucumberRuntimeFactory(exitCodes, shouldThrowExceptions);
-		List<Path> rerunFiles = getRerunFiles();
-		CucumberRuntimeExecutor runtimeExecutor = new CucumberRuntimeExecutor(runtimeFactory, rerunFiles,
-				getRuntimeConfiguration(false, false, true));
-		runtimeExecutor.run();
-		assertThat(runtimeExecutor.getRerunReports().size()).isEqualTo(rerunFiles.size());
-	}
-
-	@Test
-	public void shouldReturnANumberOfRerunReportsEqualToTheNumberOfRerunFiles() throws InterruptedException, IOException {
-		byte[] exitCodes = new byte[] { 0, 0 };
-		boolean[] shouldThrowExceptions = new boolean[] { false, false };
-		FakeCucumberRuntimeFactory runtimeFactory = new FakeCucumberRuntimeFactory(exitCodes, shouldThrowExceptions);
-		List<Path> rerunFiles = getRerunFiles();
-		CucumberRuntimeExecutor runtimeExecutor = new CucumberRuntimeExecutor(runtimeFactory, rerunFiles,
-				getRuntimeConfiguration(true, false, false));
+		int numberOfThreads = 1;
+		List<String> arguments = setFeaturePath();
+		RuntimeConfiguration runtimeConfiguration = getRuntimeConfiguration(true, true, false, arguments, numberOfThreads, false);
+		List<Path> rerunFiles = getRerunFiles(runtimeConfiguration);
+		FakeCucumberRuntimeFactory runtimeFactory =
+				new FakeCucumberRuntimeFactory(exitCodes, shouldThrowExceptions, runtimeConfiguration);
+		CucumberRuntimeExecutor runtimeExecutor = new CucumberRuntimeExecutor(runtimeFactory, rerunFiles, runtimeConfiguration);
 		runtimeExecutor.run();
 		assertThat(runtimeExecutor.getJsonReports().size()).isEqualTo(rerunFiles.size());
+		assertThat(runtimeExecutor.getJsonReports().size()).isEqualTo(numberOfThreads);
 	}
 
-	private List<Path> getRerunFiles() {
-		List<Path> rerunFiles = new ArrayList<Path>();
-		rerunFiles.add(Paths.get("/some/path"));
-		rerunFiles.add(Paths.get("/some/other/path"));
+	@Test
+	public void shouldReturnANumberOfHtmlReportsEqualToTheNumberOfRerunFilesIfDynamicDistributionIsEnabled()
+			throws InterruptedException, IOException {
+		byte[] exitCodes = new byte[] { 0, 0 };
+		boolean[] shouldThrowExceptions = new boolean[] { false, false };
+		int numberOfThreads = 1;
+		List<String> arguments = setFeaturePath();
+		RuntimeConfiguration runtimeConfiguration = getRuntimeConfiguration(true, true, false, arguments,
+				numberOfThreads, true);
+		List<Path> rerunFiles = getRerunFiles(runtimeConfiguration);
+		FakeCucumberRuntimeFactory runtimeFactory =
+				new FakeCucumberRuntimeFactory(exitCodes, shouldThrowExceptions, runtimeConfiguration);
+		CucumberRuntimeExecutor runtimeExecutor = new CucumberRuntimeExecutor(runtimeFactory, rerunFiles, runtimeConfiguration);
+		runtimeExecutor.run();
+		assertThat(runtimeExecutor.getHtmlReports().size()).isEqualTo(rerunFiles.size());
+		assertThat(runtimeExecutor.getHtmlReports().size()).isNotEqualTo(numberOfThreads);
+	}
+
+	@Test
+	public void shouldReturnANumberOfJsonReportsEqualToTheNumberOfRerunFilesIfDynamicDistributionIsEnabled()
+			throws InterruptedException, IOException {
+		byte[] exitCodes = new byte[] { 0, 0 };
+		boolean[] shouldThrowExceptions = new boolean[] { false, false };
+		int numberOfThreads = 1;
+		List<String> arguments = setFeaturePath();
+		RuntimeConfiguration runtimeConfiguration = getRuntimeConfiguration(true, true, false, arguments, numberOfThreads, true);
+		List<Path> rerunFiles = getRerunFiles(runtimeConfiguration);
+		FakeCucumberRuntimeFactory runtimeFactory =
+				new FakeCucumberRuntimeFactory(exitCodes, shouldThrowExceptions, runtimeConfiguration);
+		CucumberRuntimeExecutor runtimeExecutor = new CucumberRuntimeExecutor(runtimeFactory, rerunFiles, runtimeConfiguration);
+		runtimeExecutor.run();
+		assertThat(runtimeExecutor.getJsonReports().size()).isEqualTo(rerunFiles.size());
+		assertThat(runtimeExecutor.getJsonReports().size()).isNotEqualTo(numberOfThreads);
+	}
+
+	private List<String> setFeaturePath() {
+		List<String> arguments = new ArrayList<>();
+        arguments.add("classpath:com/bishnet/cucumber/parallel/runtime/samplefeatures/directory/FirstFeature.feature");
+        arguments.add("classpath:com/bishnet/cucumber/parallel/runtime/samplefeatures/directory/SecondFeature.feature");
+		return arguments;
+	}
+
+	private List<Path> getRerunFiles(RuntimeConfiguration runtimeConfiguration) throws IOException {
+		FeatureParser featureParser = new FeatureParser(runtimeConfiguration, Thread.currentThread().getContextClassLoader());
+		FeatureSplitter featureSplitter = new FeatureSplitter(runtimeConfiguration, featureParser.parseFeatures());
+		List<Path> rerunFiles = featureSplitter.splitFeaturesIntoRerunFiles();
 		return rerunFiles;
 	}
 
-	private RuntimeConfiguration getRuntimeConfiguration(boolean jsonReportRequired, boolean htmlReportRequired, boolean rerunReportRequired) {
-		return new RuntimeConfiguration(0, null, null, null, null, htmlReportRequired, null,
-				jsonReportRequired, null, false, null, rerunReportRequired, 0, null, 0);
+	private RuntimeConfiguration getRuntimeConfiguration(boolean jsonReportRequired, boolean htmlReportRequired,
+			boolean rerunReportRequired, List<String> featureParsingArguments, int numberOfThreads, boolean
+			dynamicFeatureDistribution) {
+		return new RuntimeConfiguration(numberOfThreads, null, featureParsingArguments, null, null, htmlReportRequired, null,
+				jsonReportRequired, null, false, null, rerunReportRequired, 0, null, 0, dynamicFeatureDistribution);
+	}
+
+	private CucumberRuntimeExecutor getRuntimeExecutor(byte[] perInvocationExitCodes, boolean[] perInvocationShouldThrowException,
+			boolean jsonReportRequired, boolean htmlReportRequired, List<String> featureParsingArguments, int numberOfThreads,
+			boolean dynamicFeatureDistribution) throws InterruptedException, IOException {
+		RuntimeConfiguration runtimeConfiguration = getRuntimeConfiguration(jsonReportRequired, htmlReportRequired,
+				false, featureParsingArguments, numberOfThreads, dynamicFeatureDistribution);
+		List<Path> rerunFiles = getRerunFiles(runtimeConfiguration);
+		FakeCucumberRuntimeFactory runtimeFactory =
+				new FakeCucumberRuntimeFactory(perInvocationExitCodes, perInvocationShouldThrowException, runtimeConfiguration);
+		CucumberRuntimeExecutor runtimeExecutor = new CucumberRuntimeExecutor(runtimeFactory, rerunFiles, runtimeConfiguration);
+		return runtimeExecutor;
 	}
 }
