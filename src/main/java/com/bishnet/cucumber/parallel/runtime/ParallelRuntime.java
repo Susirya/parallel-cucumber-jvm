@@ -65,12 +65,14 @@ public class ParallelRuntime {
 		if (result != 0 && runtimeConfiguration.rerunReportRequired) {
 			int failedCount = RerunUtils.countScenariosInRerunFile(runtimeConfiguration.rerunReportReportPath);
 			if (failedCount > runtimeConfiguration.flakyMaxCount) {
-				System.out.println("Too many flaky tests! Tests failed. Aborting rerun flaky.");
+				System.out.println(
+						String.format("Too many flaky tests ($d)! Tests failed. Aborting rerun flaky.", failedCount));
 				return result;
 			}
+			triedRerun = 1;
 			runtimeConfiguration.setJsonReportRequired(true);
-			while (result != 0 && triedRerun++ <= runtimeConfiguration.rerunAttemptsCount) {
-				System.out.println("Trying to rerun flaky tests. Attempt " + triedRerun);
+			while (result != 0 && triedRerun <= runtimeConfiguration.rerunAttemptsCount) {
+				System.out.println("Trying to rerun flaky tests. Attempt " + triedRerun++);
 				rerunFiles.clear();
 				rerunFiles.add(runtimeConfiguration.rerunReportReportPath);
 				result = runFeatures(rerunFiles);
