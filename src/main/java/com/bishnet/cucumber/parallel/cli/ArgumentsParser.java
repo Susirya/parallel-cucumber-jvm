@@ -33,12 +33,15 @@ public class ArgumentsParser {
 		int rerunAttemptsCount = 0;
 		Path flakyReportPath = null;
 		int flakyMaxCount = 0;
+        boolean dynamicFeatureDistribution = false;
 
 		while (!parseArguments.isEmpty()) {
 			String arg = parseArguments.remove(0).trim();
 
 			if (arg.equals("--num-threads")) {
 				numberOfThreads = Integer.parseInt(parseArguments.remove(0));
+			} else if (arg.equals("--dynamic-feature-distribution")) {
+				dynamicFeatureDistribution = true;
 			} else if (arg.equals("--plugin") || arg.equals("-p") || arg.equals("--format") || arg.equals("-f")) {
 				String pluginValue = parseArguments.remove(0);
 				String[] pluginArgsArray = pluginValue.split(":", 2);
@@ -93,7 +96,7 @@ public class ArgumentsParser {
 				Collections.unmodifiableList(cucumberArgs), Collections.unmodifiableList(fullFeatureParsingArguments),
 				Collections.unmodifiableList(featurePaths), htmlReportPath, htmlReportRequired, jsonReportPath,
 				jsonReportRequired, threadTimelineReportPath, threadTimelineReportRequired, rerunReportReportPath,
-				rerunReportRequired, rerunAttemptsCount, flakyReportPath, flakyMaxCount);
+				rerunReportRequired, rerunAttemptsCount, flakyReportPath, flakyMaxCount, dynamicFeatureDistribution);
 		return runtimeConfiguration;
 	}
 }
