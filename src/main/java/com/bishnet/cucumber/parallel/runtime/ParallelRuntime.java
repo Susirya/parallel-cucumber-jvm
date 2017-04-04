@@ -66,16 +66,19 @@ public class ParallelRuntime {
 			int failedCount = RerunUtils.countScenariosInRerunFile(runtimeConfiguration.rerunReportReportPath);
 			if (failedCount > runtimeConfiguration.flakyMaxCount) {
 				System.out.println(
-						String.format("Too many flaky tests ($d)! Tests failed. Aborting rerun flaky.", failedCount));
+						String.format("%d TESTS FAILED - MORE THEN ALLOWED FOR RERUN (%d)! Aborting rerun flaky.",
+								failedCount, runtimeConfiguration.flakyMaxCount));
 				return result;
 			}
+			System.out.println(String.format(
+					"RERUN FLAKY TESTS STARTED. WILL TRY FOR %d ATTEMPT(S).", runtimeConfiguration.rerunAttemptsCount));
 			triedRerun = 1;
 			runtimeConfiguration.setJsonReportRequired(true);
 			while (result != 0 && triedRerun <= runtimeConfiguration.rerunAttemptsCount) {
-				System.out.println("Trying to rerun flaky tests. Attempt " + triedRerun++);
 				rerunFiles.clear();
 				rerunFiles.add(runtimeConfiguration.rerunReportReportPath);
 				result = runFeatures(rerunFiles);
+				System.out.println(String.format("RERUN FLAKY TESTS ATTEMPT #%d FINISHED.", triedRerun++));
 			}
 		}
 		return result;
@@ -110,12 +113,13 @@ public class ParallelRuntime {
 			merger.merge(runtimeConfiguration.rerunReportReportPath);
 		}
 		if (runtimeConfiguration.jsonReportRequired) {
-			JsonReportMerger merger = new JsonReportMerger(executor.getJsonReports());
 			if (triedRerun == 0) {
+				JsonReportMerger merger = new JsonReportMerger(executor.getJsonReports());
 				merger.merge(runtimeConfiguration.jsonReportPath);
 			}
-			if (result != 0 && triedRerun != runtimeConfiguration.rerunAttemptsCount) {
-				merger.mergeRerunFailedReports(runtimeConfiguration.jsonReportPath,
+			if ((result != 0) && (triedRerun > 0) && (triedRerun != runtimeConfiguration.rerunAttemptsCount)) {
+				JsonReportMerger rerunMerger = new JsonReportMerger(executor.getJsonReports());
+				rerunMerger.mergeRerunFailedReports(runtimeConfiguration.jsonReportPath,
 						Paths.get(runtimeConfiguration.flakyReportPath.toString(), "flaky_" + triedRerun + ".json"));
 			}
 		}
