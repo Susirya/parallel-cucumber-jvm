@@ -1,10 +1,5 @@
 package com.bishnet.cucumber.parallel.runtime;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-
 import com.bishnet.cucumber.parallel.cli.ArgumentsParser;
 import com.bishnet.cucumber.parallel.report.HtmlReportMerger;
 import com.bishnet.cucumber.parallel.report.JsonReportMerger;
@@ -15,8 +10,14 @@ import com.bishnet.cucumber.parallel.util.RerunUtils;
 import cucumber.runtime.CucumberException;
 import cucumber.runtime.model.CucumberFeature;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
 public class ParallelRuntime {
 
+	private static final String FLAKY_REPORT_FILENAME_TEMPLATE = "flaky_%s.json";
 	private RuntimeConfiguration runtimeConfiguration;
 	private ClassLoader cucumberClassLoader;
 	private CucumberBackendFactory cucumberBackendFactory;
@@ -136,7 +137,7 @@ public class ParallelRuntime {
             merger.merge(runtimeConfiguration.rerunReportReportPath);
             JsonReportMerger jsonMerger = new JsonReportMerger(executor.getJsonReports());
             jsonMerger.mergeRerunFailedReports(runtimeConfiguration.jsonReportPath,
-                    Paths.get(runtimeConfiguration.flakyReportPath.toString(), "flaky_" + triedRerun + ".json"));
+                    Paths.get(runtimeConfiguration.flakyReportPath.toString(), String.format(FLAKY_REPORT_FILENAME_TEMPLATE, triedRerun)));
         }
         if (runtimeConfiguration.threadTimelineReportRequired) {
 			ThreadExecutionReporter threadExecutionReporter = new ThreadExecutionReporter();
