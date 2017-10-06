@@ -1,6 +1,7 @@
 package com.bishnet.cucumber.parallel.cli;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.bishnet.cucumber.parallel.runtime.RuntimeConfiguration;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,9 +9,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
-import com.bishnet.cucumber.parallel.runtime.RuntimeConfiguration;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ArgumentsParserTest {
 
@@ -347,7 +346,6 @@ public class ArgumentsParserTest {
 		assertThat(runtimeConfiguration.jsonReportPath.endsWith(".json"));
 	}
 
-
 	@Test
 	public void isRealRerunReportPathSetIfFlakyRerunAndJsonArgumentsWasPassedTogether()	throws IOException {
 		List<String> arguments = new ArrayList<String>();
@@ -423,7 +421,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void featureDistributionArgumentShouldBeRemovedFromResultingCucumberArgsListAndDynamicDistributionOptionShouldBeTrue() {
+	public void featureDistributionArgumentShouldBeRemovedFromResultingCucumberArgsListAndDynamicDistributionOptionShouldBeTrue() throws IOException {
 		List<String> arguments = new ArrayList<>();
 		arguments.add("--dynamic-feature-distribution");
 		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
@@ -432,11 +430,47 @@ public class ArgumentsParserTest {
 	}
 
     @Test
-    public void featureDistributionOptionShouldBeFalseIfNotSpecified() {
+    public void featureDistributionOptionShouldBeFalseIfNotSpecified() throws IOException {
         List<String> arguments = new ArrayList<>();
         ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
         RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
         assertThat(runtimeConfiguration.dynamicFeatureDistribution).isFalse();
     }
+
+    @Test
+    public void featureExecutionTimeReportOptionShouldBeFalseIfNotSpecified() throws IOException {
+        List<String> arguments = new ArrayList<>();
+        ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
+        RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
+        assertThat(runtimeConfiguration.featureExecutionTimeReportconfig.reportRequired).isFalse();
+    }
+
+	@Test
+	public void featureExecutionTimeReportOptionShouldBeFalseIfSpecified() throws IOException {
+		List<String> arguments = new ArrayList<>();
+		arguments.add("--sort-features-by-execution-time");
+		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
+		RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
+		assertThat(runtimeConfiguration.featureExecutionTimeReportconfig.reportRequired).isTrue();
+	}
+
+	@Test
+	public void featureExecutionTimeReportFileNamePrefixShouldBeEmptyIfNotSpecified() throws IOException {
+		List<String> arguments = new ArrayList<>();
+		arguments.add("--sort-features-by-execution-time");
+		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
+		RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
+		assertThat(runtimeConfiguration.featureExecutionTimeReportconfig.reportFileNamePrefix).isEqualTo("");
+	}
+
+	@Test
+	public void featureExecutionTimeReportFileNamePrefixShouldBeParsedFromArgument() throws IOException {
+		List<String> arguments = new ArrayList<>();
+		String executionTimeReportFileNamePrefix = "some-prefix-";
+		arguments.add("--sort-features-by-execution-time" + ":" + executionTimeReportFileNamePrefix);
+		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
+		RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
+		assertThat(runtimeConfiguration.featureExecutionTimeReportconfig.reportFileNamePrefix).isEqualTo(executionTimeReportFileNamePrefix);
+	}
 
 }

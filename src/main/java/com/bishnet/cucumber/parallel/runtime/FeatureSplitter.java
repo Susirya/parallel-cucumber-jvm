@@ -1,18 +1,20 @@
 package com.bishnet.cucumber.parallel.runtime;
 
-import gherkin.formatter.Formatter;
-import gherkin.formatter.Reporter;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import com.bishnet.cucumber.parallel.report.thread.FeatureExecutionTimeData;
+import com.bishnet.cucumber.parallel.report.thread.FeatureExecutionTimeReporter;
 import com.bishnet.cucumber.parallel.util.ListUtils;
 
 import cucumber.runtime.formatter.PluginFactory;
 import cucumber.runtime.model.CucumberFeature;
+import gherkin.formatter.Formatter;
+import gherkin.formatter.Reporter;
 
 public class FeatureSplitter {
 
@@ -27,11 +29,29 @@ public class FeatureSplitter {
 	public List<Path> splitFeaturesIntoRerunFiles() throws IOException {
 		List<Path> rerunPaths = new ArrayList<Path>();
 		List<CucumberFeature> filteredFeatures = filterEmptyFeatures(features);
+		if (runtimeConfiguration.featureExecutionTimeReportconfig.reportRequired)
+			filteredFeatures = sortFeaturesByExecutionTime(filteredFeatures);
 		List<List<CucumberFeature>> partitionedFeatures = ListUtils.partition(filteredFeatures, getNumberOfSegments(filteredFeatures));
 		for (List<CucumberFeature> threadFeatures : partitionedFeatures) {
 			rerunPaths.add(createSingleRerunFile(threadFeatures));
 		}
 		return rerunPaths;
+	}
+
+	private List<CucumberFeature> sortFeaturesByExecutionTime(List<CucumberFeature> filteredFeatures) {
+		Optional<List<FeatureExecutionTimeData>> optionalFeaturesExecutionTime = getFeatureExecutionTimeReporter()
+				.getReport(runtimeConfiguration.featureExecutionTimeReportconfig.reportFileNamePrefix);
+		return optionalFeaturesExecutionTime.map(
+				featuresExecutionTime -> getFeatureSorter().sortFeaturesByExecutionTime(filteredFeatures, featuresExecutionTime))
+				.orElse(filteredFeatures);
+	}
+
+	protected ExecutionTimeFeatureSorter getFeatureSorter() {
+		return new ExecutionTimeFeatureSorter();
+	}
+
+	protected FeatureExecutionTimeReporter getFeatureExecutionTimeReporter() {
+		return new FeatureExecutionTimeReporter();
 	}
 
 	private Path createSingleRerunFile(List<CucumberFeature> rerunFeatures) throws IOException {
@@ -46,7 +66,7 @@ public class FeatureSplitter {
 		return rerunPath;
 	}
 
-	private List<CucumberFeature> filterEmptyFeatures(List<CucumberFeature> featureList) {
+	protected List<CucumberFeature> filterEmptyFeatures(List<CucumberFeature> featureList) {
 		List<CucumberFeature> emptyFeatures = new ArrayList<>();
 		List<CucumberFeature> cleanFeatureList = new ArrayList<>(featureList);
 		for (CucumberFeature feature : featureList) {

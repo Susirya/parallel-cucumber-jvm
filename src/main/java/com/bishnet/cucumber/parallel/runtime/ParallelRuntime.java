@@ -4,6 +4,7 @@ import com.bishnet.cucumber.parallel.cli.ArgumentsParser;
 import com.bishnet.cucumber.parallel.report.HtmlReportMerger;
 import com.bishnet.cucumber.parallel.report.JsonReportMerger;
 import com.bishnet.cucumber.parallel.report.RerunReportMerger;
+import com.bishnet.cucumber.parallel.report.thread.FeatureExecutionTimeReporter;
 import com.bishnet.cucumber.parallel.report.thread.ThreadExecutionRecorder;
 import com.bishnet.cucumber.parallel.report.thread.ThreadExecutionReporter;
 import com.bishnet.cucumber.parallel.util.RerunUtils;
@@ -141,6 +142,11 @@ public class ParallelRuntime {
         if (runtimeConfiguration.threadTimelineReportRequired) {
 			ThreadExecutionReporter threadExecutionReporter = new ThreadExecutionReporter();
 			threadExecutionReporter.writeReport(threadExecutionRecorder.getRecordedData(), runtimeConfiguration.threadTimelineReportPath);
+		}
+		if (runtimeConfiguration.featureExecutionTimeReportconfig.reportRequired) {
+			FeatureExecutionTimeReporter reporter = new FeatureExecutionTimeReporter();
+			reporter.writeReport(threadExecutionRecorder.getRecordedData(),
+					runtimeConfiguration.featureExecutionTimeReportconfig.reportFileNamePrefix);
 		}
 
 		return result;

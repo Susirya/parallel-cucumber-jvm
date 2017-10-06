@@ -178,7 +178,7 @@ public class CucumberRuntimeExecutorTest {
 			boolean rerunReportRequired, List<String> featureParsingArguments, int numberOfThreads, boolean
 			dynamicFeatureDistribution) {
 		return new RuntimeConfiguration(numberOfThreads, null, featureParsingArguments, null, null, htmlReportRequired, null,
-				jsonReportRequired, null, false, null, rerunReportRequired, 0, null, 0, dynamicFeatureDistribution);
+				jsonReportRequired, null, false, null, rerunReportRequired, 0, null, 0, dynamicFeatureDistribution, new FeatureExecutionTimeReportConfiguration());
 	}
 
 	private CucumberRuntimeExecutor getRuntimeExecutor(byte[] perInvocationExitCodes, boolean[] perInvocationShouldThrowException,

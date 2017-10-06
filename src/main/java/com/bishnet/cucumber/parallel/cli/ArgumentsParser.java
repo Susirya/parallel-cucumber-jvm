@@ -1,5 +1,8 @@
 package com.bishnet.cucumber.parallel.cli;
 
+import com.bishnet.cucumber.parallel.runtime.FeatureExecutionTimeReportConfiguration;
+import com.bishnet.cucumber.parallel.runtime.RuntimeConfiguration;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,8 +10,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.bishnet.cucumber.parallel.runtime.RuntimeConfiguration;
 
 public class ArgumentsParser {
 
@@ -36,6 +37,7 @@ public class ArgumentsParser {
 		Path flakyReportPath = null;
 		int flakyMaxCount = 10;
 		boolean dynamicFeatureDistribution = false;
+		FeatureExecutionTimeReportConfiguration featureExecutionTimeReportconfig = new FeatureExecutionTimeReportConfiguration();
 
 		while (!parseArguments.isEmpty()) {
 			String arg = parseArguments.remove(0).trim();
@@ -85,6 +87,12 @@ public class ArgumentsParser {
 			} else if (arg.equals("--name") || arg.equals("-n")) {
 				featureParseOnlyArgs.add(arg);
 				featureParseOnlyArgs.add(parseArguments.remove(0));
+			} else if (arg.contains("--sort-features-by-execution-time")) {
+				String[] argumentParams = arg.split(":");
+				String fileNamePrefix = "";
+				if(argumentParams.length > 1)
+					fileNamePrefix = argumentParams[1];
+				featureExecutionTimeReportconfig = new FeatureExecutionTimeReportConfiguration(true, fileNamePrefix);
 			} else if (arg.startsWith("-")) {
 				cucumberArgs.add(arg);
 			} else {
@@ -112,7 +120,7 @@ public class ArgumentsParser {
 				Collections.unmodifiableList(cucumberArgs), Collections.unmodifiableList(fullFeatureParsingArguments),
 				Collections.unmodifiableList(featurePaths), htmlReportPath, htmlReportRequired, jsonReportPath,
 				jsonReportRequired, threadTimelineReportPath, threadTimelineReportRequired, rerunReportReportPath,
-				rerunReportRequired, flakyAttemptsCount, flakyReportPath, flakyMaxCount, dynamicFeatureDistribution);
+				rerunReportRequired, flakyAttemptsCount, flakyReportPath, flakyMaxCount, dynamicFeatureDistribution, featureExecutionTimeReportconfig);
 		return runtimeConfiguration;
 	}
 

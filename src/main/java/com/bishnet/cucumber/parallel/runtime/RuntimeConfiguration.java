@@ -21,12 +21,13 @@ public class RuntimeConfiguration {
 	public final Path flakyReportPath;
 	public final int flakyMaxCount;
     public final boolean dynamicFeatureDistribution;
+	public final FeatureExecutionTimeReportConfiguration featureExecutionTimeReportconfig;
 
 	public RuntimeConfiguration(int numberOfThreads, List<String> cucumberPassThroughArguments,
 			List<String> featureParsingArguments, List<String> featurePaths, Path htmlReportPath, boolean htmlReportRequired,
 			Path jsonReportPath, boolean jsonReportRequired, Path threadTimelineReportPath,
 			boolean threadTimelineReportRequired, Path rerunReportReportPath, boolean rerunReportRequired, int flakyAttemptsCount
-			,Path flakyReportPath, int flakyMaxCount, boolean dynamicFeatureDistribution) {
+			,Path flakyReportPath, int flakyMaxCount, boolean dynamicFeatureDistribution, FeatureExecutionTimeReportConfiguration featureExecutionTimeReportconfig) {
 		this.numberOfThreads = numberOfThreads;
 		this.cucumberPassthroughArguments = cucumberPassThroughArguments;
 		this.featureParsingArguments = featureParsingArguments;
@@ -43,9 +44,6 @@ public class RuntimeConfiguration {
 		this.flakyReportPath = flakyReportPath;
 		this.flakyMaxCount = flakyMaxCount;
         this.dynamicFeatureDistribution = dynamicFeatureDistribution;
-	}
-
-	public void setJsonReportRequired(boolean jsonReportRequired) {
-		this.jsonReportRequired = jsonReportRequired;
+		this.featureExecutionTimeReportconfig = featureExecutionTimeReportconfig;
 	}
 }
