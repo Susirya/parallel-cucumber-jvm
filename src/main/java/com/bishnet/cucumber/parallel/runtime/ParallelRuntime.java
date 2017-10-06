@@ -41,8 +41,7 @@ public class ParallelRuntime {
 		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
 		try {
 			runtimeConfiguration = argumentsParser.parse();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			throw new CucumberException(e);
 		}
 	}
@@ -143,7 +142,6 @@ public class ParallelRuntime {
 			ThreadExecutionReporter threadExecutionReporter = new ThreadExecutionReporter();
 			threadExecutionReporter.writeReport(threadExecutionRecorder.getRecordedData(), runtimeConfiguration.threadTimelineReportPath);
 		}
-
 
 		return result;
 	}

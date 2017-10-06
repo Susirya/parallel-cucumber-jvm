@@ -35,6 +35,7 @@ public class ArgumentsParser {
 		int flakyAttemptsCount = 0;
 		Path flakyReportPath = null;
 		int flakyMaxCount = 10;
+		boolean dynamicFeatureDistribution = false;
 
 		while (!parseArguments.isEmpty()) {
 			String arg = parseArguments.remove(0).trim();
@@ -47,6 +48,8 @@ public class ArgumentsParser {
 				flakyReportPath = Paths.get(parseArguments.remove(0));
 			} else if (arg.equals("--flaky-rerun-threshold")) {
 				flakyMaxCount = Integer.parseInt(parseArguments.remove(0));
+			} else if (arg.equals("--dynamic-feature-distribution")) {
+				dynamicFeatureDistribution = true;
 			} else if (arg.equals("--plugin") || arg.equals("-p") || arg.equals("--format") || arg.equals("-f")) {
 				String pluginValue = parseArguments.remove(0);
 				String[] pluginArgsArray = pluginValue.split(":", 2);
@@ -61,6 +64,7 @@ public class ArgumentsParser {
 					threadTimelineReportPath = Paths.get(pluginArgsArray[1]);
 				} else if (pluginArgsArray[0].equals("rerun")) {
 					rerunReportRequired = true;
+					jsonReportRequired = true;
 					rerunReportReportPath = Paths.get(pluginArgsArray[1]);
 				} else {
 					cucumberArgs.add(arg);
@@ -108,7 +112,7 @@ public class ArgumentsParser {
 				Collections.unmodifiableList(cucumberArgs), Collections.unmodifiableList(fullFeatureParsingArguments),
 				Collections.unmodifiableList(featurePaths), htmlReportPath, htmlReportRequired, jsonReportPath,
 				jsonReportRequired, threadTimelineReportPath, threadTimelineReportRequired, rerunReportReportPath,
-				rerunReportRequired, flakyAttemptsCount, flakyReportPath, flakyMaxCount);
+				rerunReportRequired, flakyAttemptsCount, flakyReportPath, flakyMaxCount, dynamicFeatureDistribution);
 		return runtimeConfiguration;
 	}
 
