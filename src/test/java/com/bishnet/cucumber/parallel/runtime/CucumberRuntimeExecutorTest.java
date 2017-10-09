@@ -1,16 +1,14 @@
 package com.bishnet.cucumber.parallel.runtime;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import cucumber.runtime.CucumberException;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
-import cucumber.runtime.CucumberException;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CucumberRuntimeExecutorTest {
 
@@ -178,7 +176,8 @@ public class CucumberRuntimeExecutorTest {
 			boolean rerunReportRequired, List<String> featureParsingArguments, int numberOfThreads, boolean
 			dynamicFeatureDistribution) {
 		return new RuntimeConfiguration(numberOfThreads, null, featureParsingArguments, null, null, htmlReportRequired, null,
-				jsonReportRequired, null, false, null, rerunReportRequired, 0, null, 0, dynamicFeatureDistribution, new FeatureExecutionTimeReportConfiguration());
+				jsonReportRequired, null, false, null, rerunReportRequired, new FlakyRerunConfiguration(),
+				dynamicFeatureDistribution, new FeatureExecutionTimeReportConfiguration());
 	}
 
 	private CucumberRuntimeExecutor getRuntimeExecutor(byte[] perInvocationExitCodes, boolean[] perInvocationShouldThrowException,

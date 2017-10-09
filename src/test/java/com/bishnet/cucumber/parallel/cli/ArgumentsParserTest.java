@@ -20,7 +20,7 @@ public class ArgumentsParserTest {
 	private static final String REPORT_FLAKY = "report" + File.pathSeparatorChar + "someflakyreportdir";
 
 	@Test
-	public void numberOfThreadsShouldMatchNumberOfProcessorsWhenNotSpecified() throws IOException {
+	public void numberOfThreadsShouldMatchNumberOfProcessorsWhenNotSpecified() {
 		List<String> emptyArgList = new ArrayList<String>();
 		ArgumentsParser argumentsParser = new ArgumentsParser(emptyArgList);
 		RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
@@ -28,7 +28,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void numberOfThreadsCanBeSetByAnArgument() throws IOException {
+	public void numberOfThreadsCanBeSetByAnArgument() {
 		int numberOfThreads = 10;
 		List<String> threadsArgList = new ArrayList<String>();
 		threadsArgList.add("--num-threads");
@@ -39,7 +39,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void finalReportPathIsParsedFromJsonPluginArgument() throws IOException {
+	public void finalReportPathIsParsedFromJsonPluginArgument() {
 		List<String> reportArgsList = new ArrayList<String>();
 		reportArgsList.add("--plugin");
 		reportArgsList.add("json:" + REPORT_MYREPORT_JSON);
@@ -49,7 +49,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void finalReportPathIsParsedFromJsonPluginArgumentUsingShortForm() throws IOException {
+	public void finalReportPathIsParsedFromJsonPluginArgumentUsingShortForm() {
 		List<String> reportArgsList = new ArrayList<String>();
 		reportArgsList.add("-p");
 		reportArgsList.add("json:" + REPORT_MYREPORT_JSON);
@@ -59,7 +59,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void finalReportPathIsParsedFromHtmlPluginArgument() throws IOException {
+	public void finalReportPathIsParsedFromHtmlPluginArgument() {
 		List<String> reportArgsList = new ArrayList<String>();
 		reportArgsList.add("--plugin");
 		reportArgsList.add("html:" + REPORT_MYREPORT);
@@ -69,7 +69,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void finalReportPathIsParsedFromHtmlPluginArgumentUsingShortForm() throws IOException {
+	public void finalReportPathIsParsedFromHtmlPluginArgumentUsingShortForm() {
 		List<String> reportArgsList = new ArrayList<String>();
 		reportArgsList.add("-p");
 		reportArgsList.add("html:" + REPORT_MYREPORT);
@@ -79,7 +79,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void finalReportPathIsParsedFromHtmlPluginArgumentsWhenAbsoluteWindowsPathIsProvided() throws IOException {
+	public void finalReportPathIsParsedFromHtmlPluginArgumentsWhenAbsoluteWindowsPathIsProvided() {
 		String reportPath = "c:\\some\\path\\myreport";
 		List<String> reportArgsList = new ArrayList<String>();
 		reportArgsList.add("--plugin");
@@ -90,7 +90,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void finalReportPathIsParsedFromJsonPluginArgumentsWhenAbsoluteWindowsPathIsProvided() throws IOException {
+	public void finalReportPathIsParsedFromJsonPluginArgumentsWhenAbsoluteWindowsPathIsProvided() {
 		String reportPath = "c:\\some\\path\\myreport.json";
 		List<String> reportArgsList = new ArrayList<String>();
 		reportArgsList.add("--plugin");
@@ -101,7 +101,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void pluginArgumentWhichIsNotJsonOrHtmlShouldBePassedThroughToResultingCucumberArgsList() throws IOException {
+	public void pluginArgumentWhichIsNotJsonOrHtmlShouldBePassedThroughToResultingCucumberArgsList() {
 		List<String> pluginArgsList = new ArrayList<String>();
 		pluginArgsList.add("--plugin");
 		pluginArgsList.add("other");
@@ -112,7 +112,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void numberOfThreadsArgumentShouldBeRemovedFromResultingCucumberArgsList() throws IOException {
+	public void numberOfThreadsArgumentShouldBeRemovedFromResultingCucumberArgsList() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--num-threads");
 		arguments.add("10");
@@ -125,7 +125,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void pluginArgumentShouldBeRemovedFromResultingCucumberArgsList() throws IOException {
+	public void pluginArgumentShouldBeRemovedFromResultingCucumberArgsList() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--plugin");
 		arguments.add("json:report.json");
@@ -138,7 +138,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void featurePathArgumentsShouldBeRemovedFromCucumberArgsAndAddedToFeaturePaths() throws IOException {
+	public void featurePathArgumentsShouldBeRemovedFromCucumberArgsAndAddedToFeaturePaths() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("classpath:featurepath");
 		arguments.add("/absolute/feature/path");
@@ -154,7 +154,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void glueArgumentShouldBePassedThroughToCucumberArgsList() throws IOException {
+	public void glueArgumentShouldBePassedThroughToCucumberArgsList() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--glue");
 		arguments.add("com.bishnet.glue");
@@ -168,7 +168,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void nameArgumentShouldNotBePassedThroughToCucumberArgsListButShouldBePresentInFeatureParseArgsList() throws IOException {
+	public void nameArgumentShouldNotBePassedThroughToCucumberArgsListButShouldBePresentInFeatureParseArgsList() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--name");
 		arguments.add("testname");
@@ -182,7 +182,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void tagArgumentShouldNotBePassedThroughToCucumberArgsListButShouldBePresentInFeatureParseArgsList() throws IOException {
+	public void tagArgumentShouldNotBePassedThroughToCucumberArgsListButShouldBePresentInFeatureParseArgsList() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--tags");
 		arguments.add("@testTag");
@@ -196,7 +196,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void snippetsArgumentShouldBePassedThroughToCucumberArgsList() throws IOException {
+	public void snippetsArgumentShouldBePassedThroughToCucumberArgsList() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--snippets");
 		arguments.add("asnippet");
@@ -207,7 +207,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void internationalisationArgumentShouldBePassedThroughToCucumberArgsList() throws IOException  {
+	public void internationalisationArgumentShouldBePassedThroughToCucumberArgsList() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--i18n");
 		arguments.add("value");
@@ -218,7 +218,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void formatArgumentShouldBeRemovedFromResultingCucumberArgsList() throws IOException {
+	public void formatArgumentShouldBeRemovedFromResultingCucumberArgsList() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--format");
 		arguments.add("json:report.json");
@@ -230,7 +230,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void isHtmlReportRequiredShouldBeFalseIfNoHtmlArgumentWasPassed() throws IOException {
+	public void isHtmlReportRequiredShouldBeFalseIfNoHtmlArgumentWasPassed() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--strict");
 		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
@@ -239,7 +239,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void isJsonReportRequiredShouldBeFalseIfNoJsonArgumentWasPassed() throws IOException {
+	public void isJsonReportRequiredShouldBeFalseIfNoJsonArgumentWasPassed() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--strict");
 		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
@@ -248,7 +248,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void isHtmlReportRequiredShouldBeTrueIfHtmlArgumentWasPassed() throws IOException {
+	public void isHtmlReportRequiredShouldBeTrueIfHtmlArgumentWasPassed() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--plugin");
 		arguments.add("html:report");
@@ -258,7 +258,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void isJsonReportRequiredShouldBeTrueIfJsonArgumentWasPassed() throws IOException {
+	public void isJsonReportRequiredShouldBeTrueIfJsonArgumentWasPassed() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--plugin");
 		arguments.add("json:report.json");
@@ -268,7 +268,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void isThreadReportRequiredShouldBeTrueIfJsonArgumentWasPassed() throws IOException {
+	public void isThreadReportRequiredShouldBeTrueIfJsonArgumentWasPassed() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--plugin");
 		arguments.add("thread-report:threadReportFolder");
@@ -278,7 +278,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void isRerunReportRequiredShouldBeTrueIfRerunArgumentWasPassed() throws IOException {
+	public void isRerunReportRequiredShouldBeTrueIfRerunArgumentWasPassed() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--plugin");
 		arguments.add("rerun:" + REPORT_RERUNREPORT);
@@ -288,7 +288,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void isJsonReportRequiredSetTrueAndTempJsonReportPathSetIfFlakyRerunArgumentWasPassed() throws IOException {
+	public void isJsonReportRequiredSetTrueAndTempJsonReportPathSetIfFlakyRerunArgumentWasPassed() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--flaky-rerun-attemptsCount");
 		arguments.add("3");
@@ -300,7 +300,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void isRerunReportRequiredSetTrueTempRerunReportPathSetIfFlakyRerunArgumentWasPassed() throws IOException {
+	public void isRerunReportRequiredSetTrueTempRerunReportPathSetIfFlakyRerunArgumentWasPassed() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--flaky-rerun-attemptsCount");
 		arguments.add("3");
@@ -312,28 +312,28 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void isFlakyReportPathSetToJsonReportParentSetIfFlakyRerunArgumentWasPassedWithoutPath() throws IOException {
+	public void isFlakyReportPathSetToJsonReportParentSetIfFlakyRerunArgumentWasPassedWithoutPath() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--flaky-rerun-attemptsCount");
 		arguments.add("3");
 		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
 		RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
 		Path jsonReportParent = runtimeConfiguration.jsonReportPath.getParent();
-		assertThat(runtimeConfiguration.flakyReportPath).isEqualTo(jsonReportParent);
+		assertThat(runtimeConfiguration.flakyRerunConfig.flakyReportPath).isEqualTo(jsonReportParent);
 	}
 
 	@Test
-	public void flakyMaxCountSetToDefaultIfFlakyRerunArgumentsWasPassedWithoutflakyMaxCount() throws IOException {
+	public void flakyMaxCountSetToDefaultIfFlakyRerunArgumentsWasPassedWithoutflakyMaxCount() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--flaky-rerun-attemptsCount");
 		arguments.add("3");
 		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
 		RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
-		assertThat(runtimeConfiguration.flakyMaxCount).isEqualTo(10);
+		assertThat(runtimeConfiguration.flakyRerunConfig.flakyMaxCount).isEqualTo(0);
 	}
 
 	@Test
-	public void isRealJsonReportPathSetIfFlakyRerunAndJsonArgumentsWasPassedTogether() throws IOException {
+	public void isRealJsonReportPathSetIfFlakyRerunAndJsonArgumentsWasPassedTogether() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--flaky-rerun-attemptsCount");
 		arguments.add("3");
@@ -347,7 +347,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void isRealRerunReportPathSetIfFlakyRerunAndJsonArgumentsWasPassedTogether()	throws IOException {
+	public void isRealRerunReportPathSetIfFlakyRerunAndJsonArgumentsWasPassedTogether()	{
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--flaky-rerun-attemptsCount");
 		arguments.add("3");
@@ -367,31 +367,31 @@ public class ArgumentsParserTest {
 		arguments.add("3");
 		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
 		RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
-		assertThat(runtimeConfiguration.flakyAttemptsCount).isEqualTo(3);
+		assertThat(runtimeConfiguration.flakyRerunConfig.flakyAttemptsCount).isEqualTo(3);
 	}
 
 	@Test
-	public void flakyRerunReportDirParsedCorrectlyIfFlakyRerunArgumentWasPassed() throws IOException {
+	public void flakyRerunReportDirParsedCorrectlyIfFlakyRerunArgumentWasPassed() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--flaky-rerun-reportDir");
 		arguments.add(REPORT_FLAKY);
 		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
 		RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
-		assertThat(runtimeConfiguration.flakyReportPath.toString()).isEqualTo(REPORT_FLAKY);
+		assertThat(runtimeConfiguration.flakyRerunConfig.flakyReportPath.toString()).isEqualTo(REPORT_FLAKY);
 	}
 
 	@Test
-	public void flakyMaxCountParsedCorrectlyIfFlakyRerunArgumentsWasPassed() throws IOException {
+	public void flakyMaxCountParsedCorrectlyIfFlakyRerunArgumentsWasPassed() {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--flaky-rerun-threshold");
 		arguments.add("5");
 		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
 		RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
-		assertThat(runtimeConfiguration.flakyMaxCount).isEqualTo(5);
+		assertThat(runtimeConfiguration.flakyRerunConfig.flakyMaxCount).isEqualTo(5);
 	}
-	
+
 	@Test
-	public void finalReportPathIsParsedFromRerunPluginArgument() throws IOException {
+	public void finalReportPathIsParsedFromRerunPluginArgument() {
 		List<String> reportArgsList = new ArrayList<String>();
 		reportArgsList.add("--plugin");
 		reportArgsList.add("rerun:" + REPORT_RERUNREPORT);
@@ -401,7 +401,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void finalReportPathIsParsedFromThreadReportPluginArgument() throws IOException {
+	public void finalReportPathIsParsedFromThreadReportPluginArgument() {
 		List<String> reportArgsList = new ArrayList<String>();
 		reportArgsList.add("--plugin");
 		reportArgsList.add("thread-report:" + REPORT_THREADREPORT);
@@ -411,7 +411,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void finalReportPathIsParsedFromThreadReportPluginArgumentUsingShortForm() throws IOException {
+	public void finalReportPathIsParsedFromThreadReportPluginArgumentUsingShortForm() {
 		List<String> reportArgsList = new ArrayList<String>();
 		reportArgsList.add("-p");
 		reportArgsList.add("thread-report:" + REPORT_THREADREPORT);
@@ -421,7 +421,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void featureDistributionArgumentShouldBeRemovedFromResultingCucumberArgsListAndDynamicDistributionOptionShouldBeTrue() throws IOException {
+	public void featureDistributionArgumentShouldBeRemovedFromResultingCucumberArgsListAndDynamicDistributionOptionShouldBeTrue() {
 		List<String> arguments = new ArrayList<>();
 		arguments.add("--dynamic-feature-distribution");
 		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
@@ -430,7 +430,7 @@ public class ArgumentsParserTest {
 	}
 
     @Test
-    public void featureDistributionOptionShouldBeFalseIfNotSpecified() throws IOException {
+    public void featureDistributionOptionShouldBeFalseIfNotSpecified() {
         List<String> arguments = new ArrayList<>();
         ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
         RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
@@ -438,7 +438,7 @@ public class ArgumentsParserTest {
     }
 
     @Test
-    public void featureExecutionTimeReportOptionShouldBeFalseIfNotSpecified() throws IOException {
+    public void featureExecutionTimeReportOptionShouldBeFalseIfNotSpecified() {
         List<String> arguments = new ArrayList<>();
         ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
         RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
@@ -446,7 +446,7 @@ public class ArgumentsParserTest {
     }
 
 	@Test
-	public void featureExecutionTimeReportOptionShouldBeFalseIfSpecified() throws IOException {
+	public void featureExecutionTimeReportOptionShouldBeFalseIfSpecified() {
 		List<String> arguments = new ArrayList<>();
 		arguments.add("--sort-features-by-execution-time");
 		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
@@ -455,7 +455,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void featureExecutionTimeReportFileNamePrefixShouldBeEmptyIfNotSpecified() throws IOException {
+	public void featureExecutionTimeReportFileNamePrefixShouldBeEmptyIfNotSpecified() {
 		List<String> arguments = new ArrayList<>();
 		arguments.add("--sort-features-by-execution-time");
 		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
@@ -464,7 +464,7 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
-	public void featureExecutionTimeReportFileNamePrefixShouldBeParsedFromArgument() throws IOException {
+	public void featureExecutionTimeReportFileNamePrefixShouldBeParsedFromArgument() {
 		List<String> arguments = new ArrayList<>();
 		String executionTimeReportFileNamePrefix = "some-prefix-";
 		arguments.add("--sort-features-by-execution-time" + ":" + executionTimeReportFileNamePrefix);

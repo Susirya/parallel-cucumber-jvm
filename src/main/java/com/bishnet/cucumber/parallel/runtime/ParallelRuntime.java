@@ -15,10 +15,19 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ParallelRuntime {
 
 	private static final String FLAKY_REPORT_FILENAME_TEMPLATE = "flaky_%s.json";
+	private static final Logger LOG = Logger.getLogger(ParallelRuntime.class.getName());
+	private static final String LOG_MSG_NONE_OF_THE_FEATURES_FOUND_IN_PATH =
+			"None of the features or scenarios at %s matched the filters, or no scenarios found.";
+	private static final String LOG_MSG_TOO_MANY_TESTS_FAILED_FOR_RERUN =
+			"%d TESTS FAILED - MORE THEN ALLOWED FOR RERUN (%d)! Aborting rerun flaky.";
+	private static final String LOG_MSG_RERUN_FLAKY_TESTS_STARTED = "RERUN FLAKY TESTS STARTED. WILL TRY FOR %d ATTEMPT(S).";
+	private static final String LOG_MSG_RERUN_FLAKIES_ATTEMPT_FINISHED = "RERUN FLAKY TESTS ATTEMPT #%d FINISHED.";
+	private static final String LOG_MSG_RERUN_FLAKY_TESTS_FINISHED = "RERUN FLAKY TESTS FINISHED. TRIED FOR %d ATTEMPT(S).";
 	private RuntimeConfiguration runtimeConfiguration;
 	private ClassLoader cucumberClassLoader;
 	private CucumberBackendFactory cucumberBackendFactory;
@@ -40,11 +49,7 @@ public class ParallelRuntime {
 		this.cucumberClassLoader = cucumberClassLoader;
 		this.cucumberBackendFactory = cucumberBackendFactory;
 		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
-		try {
-			runtimeConfiguration = argumentsParser.parse();
-		} catch (IOException e) {
-			throw new CucumberException(e);
-		}
+		runtimeConfiguration = argumentsParser.parse();
 	}
 
 	public byte run() {
@@ -61,13 +66,11 @@ public class ParallelRuntime {
 	private byte runWithRerunFailed(List<CucumberFeature> features) throws IOException, InterruptedException {
 		List<Path> rerunFiles = splitFeaturesIntoRerunFiles(features);
 		if (rerunFiles.isEmpty()) {
-			System.out.println(
-					String.format("None of the features or scenarios at %s matched the filters, or no scenarios found.",
-							runtimeConfiguration.featurePaths));
+		 	LOG.info(String.format(LOG_MSG_NONE_OF_THE_FEATURES_FOUND_IN_PATH, runtimeConfiguration.featurePaths));
 			return 0;
 		}
 		byte result = runFeatures(rerunFiles);
-		if (result != 0 && runtimeConfiguration.flakyAttemptsCount > 0) {
+		if (result != 0 && runtimeConfiguration.flakyRerunConfig.flakyAttemptsCount > 0) {
 			result = rerunFlakyTests(rerunFiles, result);
 		}
 		return result;
@@ -75,23 +78,20 @@ public class ParallelRuntime {
 
 	private byte rerunFlakyTests(List<Path> rerunFiles, byte result) throws IOException, InterruptedException {
 		int failedCount = RerunUtils.countScenariosInRerunFile(runtimeConfiguration.rerunReportReportPath);
-		if (failedCount > runtimeConfiguration.flakyMaxCount) {
-			System.out.println(
-					String.format("%d TESTS FAILED - MORE THEN ALLOWED FOR RERUN (%d)! Aborting rerun flaky.",
-							failedCount, runtimeConfiguration.flakyMaxCount));
+		int flakyMaxCount = runtimeConfiguration.flakyRerunConfig.flakyMaxCount;
+		if (failedCount > flakyMaxCount) {
+			LOG.info(String.format(LOG_MSG_TOO_MANY_TESTS_FAILED_FOR_RERUN, failedCount, flakyMaxCount));
 			return result;
 		}
-		System.out.println(String.format(
-				"RERUN FLAKY TESTS STARTED. WILL TRY FOR %d ATTEMPT(S).", runtimeConfiguration.flakyAttemptsCount));
+		LOG.info(String.format(LOG_MSG_RERUN_FLAKY_TESTS_STARTED, runtimeConfiguration.flakyRerunConfig.flakyAttemptsCount));
 		triedRerun = 1;
-		while (result != 0 && triedRerun <= runtimeConfiguration.flakyAttemptsCount) {
+		while (result != 0 && triedRerun <= runtimeConfiguration.flakyRerunConfig.flakyAttemptsCount) {
 			rerunFiles.clear();
 			rerunFiles.add(runtimeConfiguration.rerunReportReportPath);
 			result = runFeatures(rerunFiles);
-			System.out.println(String.format("RERUN FLAKY TESTS ATTEMPT #%d FINISHED.", triedRerun++));
+			LOG.info(String.format(LOG_MSG_RERUN_FLAKIES_ATTEMPT_FINISHED, triedRerun++));
 		}
-		System.out.println(String.format(
-				"RERUN FLAKY TESTS FINISHED. TRIED FOR %d ATTEMPT(S).", triedRerun));
+		LOG.info(String.format(LOG_MSG_RERUN_FLAKY_TESTS_FINISHED, triedRerun));
 		return result;
 	}
 
@@ -137,7 +137,8 @@ public class ParallelRuntime {
             merger.merge(runtimeConfiguration.rerunReportReportPath);
             JsonReportMerger jsonMerger = new JsonReportMerger(executor.getJsonReports());
             jsonMerger.mergeRerunFailedReports(runtimeConfiguration.jsonReportPath,
-                    Paths.get(runtimeConfiguration.flakyReportPath.toString(), String.format(FLAKY_REPORT_FILENAME_TEMPLATE, triedRerun)));
+                    Paths.get(runtimeConfiguration.flakyRerunConfig.flakyReportPath.toString(),
+							String.format(FLAKY_REPORT_FILENAME_TEMPLATE, triedRerun)));
         }
         if (runtimeConfiguration.threadTimelineReportRequired) {
 			ThreadExecutionReporter threadExecutionReporter = new ThreadExecutionReporter();

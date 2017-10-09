@@ -1,13 +1,12 @@
 package com.bishnet.cucumber.parallel.runtime;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import cucumber.runtime.Runtime;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cucumber.runtime.Runtime;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CucumberRuntimeFactoryTest {
 
@@ -93,7 +92,7 @@ public class CucumberRuntimeFactoryTest {
 	private RuntimeConfiguration getRuntimeConfiguration(List<String> featurePaths, List<String>
 			cucumberPassthroughArguments, boolean threadTimelineReportRequired) {
 		return new RuntimeConfiguration(0, cucumberPassthroughArguments, null, featurePaths,
-				null, false, null, false, null, threadTimelineReportRequired, null, false, 0, null, 0, false,
+				null, false, null, false, null, threadTimelineReportRequired, null, false, new FlakyRerunConfiguration(), false,
 				new FeatureExecutionTimeReportConfiguration());
 	}
 

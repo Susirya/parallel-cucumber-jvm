@@ -1,15 +1,14 @@
 package com.bishnet.cucumber.parallel.runtime;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import cucumber.runtime.model.CucumberFeature;
 import gherkin.formatter.model.Result;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import cucumber.runtime.model.CucumberFeature;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RerunFileBuilderTest {
 
@@ -94,6 +93,6 @@ public class RerunFileBuilderTest {
 
 	private RuntimeConfiguration getRuntimeConfiguration(List<String> featureParsingArguments) {
 		return new RuntimeConfiguration(0, null, featureParsingArguments, null, null, false, null, false,
-				null, false, null, false, 0, null, 0, false, new FeatureExecutionTimeReportConfiguration());
+				null, false, null, false, new FlakyRerunConfiguration(), false, new FeatureExecutionTimeReportConfiguration());
 	}
 }

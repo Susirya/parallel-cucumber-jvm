@@ -1,10 +1,10 @@
 package com.bishnet.cucumber.parallel.cli;
 
 import com.bishnet.cucumber.parallel.runtime.FeatureExecutionTimeReportConfiguration;
+import com.bishnet.cucumber.parallel.runtime.FlakyRerunConfiguration;
 import com.bishnet.cucumber.parallel.runtime.RuntimeConfiguration;
+import com.bishnet.cucumber.parallel.util.RerunUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class ArgumentsParser {
 		this.arguments = arguments;
 	}
 
-	public RuntimeConfiguration parse() throws IOException {
+	public RuntimeConfiguration parse() {
 		List<String> cucumberArgs = new ArrayList<String>();
 		List<String> featureParseOnlyArgs = new ArrayList<String>();
 		List<String> featurePaths = new ArrayList<String>();
@@ -35,7 +35,8 @@ public class ArgumentsParser {
 		Path rerunReportReportPath = null;
 		int flakyAttemptsCount = 0;
 		Path flakyReportPath = null;
-		int flakyMaxCount = 10;
+		int flakyMaxCount = 0;
+		FlakyRerunConfiguration flakyRerunConfig;
 		boolean dynamicFeatureDistribution = false;
 		FeatureExecutionTimeReportConfiguration featureExecutionTimeReportconfig = new FeatureExecutionTimeReportConfiguration();
 
@@ -66,7 +67,6 @@ public class ArgumentsParser {
 					threadTimelineReportPath = Paths.get(pluginArgsArray[1]);
 				} else if (pluginArgsArray[0].equals("rerun")) {
 					rerunReportRequired = true;
-					jsonReportRequired = true;
 					rerunReportReportPath = Paths.get(pluginArgsArray[1]);
 				} else {
 					cucumberArgs.add(arg);
@@ -106,33 +106,22 @@ public class ArgumentsParser {
 		if (flakyAttemptsCount > 0) {
 			if (!jsonReportRequired) {
 				jsonReportRequired = true;
-				jsonReportPath = getTempJsonPath();
+				jsonReportPath = RerunUtils.getTempFilePathWithExtention(".json");
 			}
 			if (!rerunReportRequired) {
 				rerunReportRequired = true;
-				rerunReportReportPath = getTempRerunPath();
+				rerunReportReportPath = RerunUtils.getTempFilePathWithExtention(".rerun");
 			}
 			if (flakyReportPath == null) {
 				flakyReportPath = jsonReportPath.getParent();
 			}
 		}
+		flakyRerunConfig = new FlakyRerunConfiguration(flakyAttemptsCount, flakyReportPath, flakyMaxCount);
 		RuntimeConfiguration runtimeConfiguration = new RuntimeConfiguration(numberOfThreads,
 				Collections.unmodifiableList(cucumberArgs), Collections.unmodifiableList(fullFeatureParsingArguments),
 				Collections.unmodifiableList(featurePaths), htmlReportPath, htmlReportRequired, jsonReportPath,
 				jsonReportRequired, threadTimelineReportPath, threadTimelineReportRequired, rerunReportReportPath,
-				rerunReportRequired, flakyAttemptsCount, flakyReportPath, flakyMaxCount, dynamicFeatureDistribution, featureExecutionTimeReportconfig);
+				rerunReportRequired, flakyRerunConfig, dynamicFeatureDistribution, featureExecutionTimeReportconfig);
 		return runtimeConfiguration;
-	}
-
-	private Path getTempRerunPath() throws IOException {
-		Path rerunReportReportPath = Files.createTempFile("parallelCukesTmp", ".rerun");
-		rerunReportReportPath.toFile().deleteOnExit();
-		return rerunReportReportPath;
-	}
-
-	private Path getTempJsonPath() throws IOException {
-		Path jsonReportPath = Files.createTempFile("parallelCukesTmp", ".json");
-		jsonReportPath.toFile().deleteOnExit();
-		return jsonReportPath;
 	}
 }

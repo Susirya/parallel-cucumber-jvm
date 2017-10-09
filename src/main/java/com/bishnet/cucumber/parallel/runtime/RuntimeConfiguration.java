@@ -17,17 +17,16 @@ public class RuntimeConfiguration {
 	public final boolean jsonReportRequired;
 	public final boolean threadTimelineReportRequired;
 	public final boolean rerunReportRequired;
-	public final int flakyAttemptsCount;
-	public final Path flakyReportPath;
-	public final int flakyMaxCount;
+	public final FlakyRerunConfiguration flakyRerunConfig;
     public final boolean dynamicFeatureDistribution;
 	public final FeatureExecutionTimeReportConfiguration featureExecutionTimeReportconfig;
 
 	public RuntimeConfiguration(int numberOfThreads, List<String> cucumberPassThroughArguments,
-			List<String> featureParsingArguments, List<String> featurePaths, Path htmlReportPath, boolean htmlReportRequired,
-			Path jsonReportPath, boolean jsonReportRequired, Path threadTimelineReportPath,
-			boolean threadTimelineReportRequired, Path rerunReportReportPath, boolean rerunReportRequired, int flakyAttemptsCount
-			,Path flakyReportPath, int flakyMaxCount, boolean dynamicFeatureDistribution, FeatureExecutionTimeReportConfiguration featureExecutionTimeReportconfig) {
+								List<String> featureParsingArguments, List<String> featurePaths, Path htmlReportPath, boolean htmlReportRequired,
+								Path jsonReportPath, boolean jsonReportRequired, Path threadTimelineReportPath,
+								boolean threadTimelineReportRequired, Path rerunReportReportPath, boolean rerunReportRequired,
+								FlakyRerunConfiguration flakyRerunConfig, boolean dynamicFeatureDistribution,
+								FeatureExecutionTimeReportConfiguration featureExecutionTimeReportconfig) {
 		this.numberOfThreads = numberOfThreads;
 		this.cucumberPassthroughArguments = cucumberPassThroughArguments;
 		this.featureParsingArguments = featureParsingArguments;
@@ -40,9 +39,7 @@ public class RuntimeConfiguration {
 		this.threadTimelineReportRequired = threadTimelineReportRequired;
 		this.rerunReportReportPath = rerunReportReportPath;
 		this.rerunReportRequired = rerunReportRequired;
-		this.flakyAttemptsCount = flakyAttemptsCount;
-		this.flakyReportPath = flakyReportPath;
-		this.flakyMaxCount = flakyMaxCount;
+        this.flakyRerunConfig = flakyRerunConfig;
         this.dynamicFeatureDistribution = dynamicFeatureDistribution;
 		this.featureExecutionTimeReportconfig = featureExecutionTimeReportconfig;
 	}

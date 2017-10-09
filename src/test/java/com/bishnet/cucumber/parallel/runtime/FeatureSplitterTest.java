@@ -145,13 +145,13 @@ public class FeatureSplitterTest {
 
 	private RuntimeConfiguration getRuntimeConfiguration(List<String> featureParsingArguments, int numberOfThreads) {
 		return new RuntimeConfiguration(numberOfThreads, null, featureParsingArguments, null, null, false, null,
-				false, null, false, null, false, 0, null, 0, false, new FeatureExecutionTimeReportConfiguration());
+				false, null, false, null, false, new FlakyRerunConfiguration(), false, new FeatureExecutionTimeReportConfiguration());
     }
 
     private RuntimeConfiguration
     getRuntimeConfiguration(FeatureExecutionTimeReportConfiguration featureExecutionTimeReportConfiguration) {
         return new RuntimeConfiguration(1, null, emptyList(), null, null, false, null,
-				false, null, false, null, false, 0, null, 0, false, featureExecutionTimeReportConfiguration);
+				false, null, false, null, false, new FlakyRerunConfiguration(), false, featureExecutionTimeReportConfiguration);
     }
 
     private FeatureSplitter getFeatureSplitter(RuntimeConfiguration runtimeConfiguration, List<CucumberFeature> features) {
