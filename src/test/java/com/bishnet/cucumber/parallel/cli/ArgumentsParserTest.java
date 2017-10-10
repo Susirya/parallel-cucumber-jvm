@@ -18,6 +18,7 @@ public class ArgumentsParserTest {
 	private static final String REPORT_THREADREPORT = "report" + File.pathSeparatorChar + "threadreportdir";
 	private static final String REPORT_RERUNREPORT = "report" + File.pathSeparatorChar + "rerunReport.rerun";
 	private static final String REPORT_FLAKY = "report" + File.pathSeparatorChar + "someflakyreportdir";
+	public static final int DEFAULT_FLAKY_MAX_COUNT = 0;
 
 	@Test
 	public void numberOfThreadsShouldMatchNumberOfProcessorsWhenNotSpecified() {
@@ -329,7 +330,7 @@ public class ArgumentsParserTest {
 		arguments.add("3");
 		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
 		RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
-		assertThat(runtimeConfiguration.flakyRerunConfig.flakyMaxCount).isEqualTo(0);
+		assertThat(runtimeConfiguration.flakyRerunConfig.flakyMaxCount).isEqualTo(DEFAULT_FLAKY_MAX_COUNT);
 	}
 
 	@Test
@@ -388,6 +389,18 @@ public class ArgumentsParserTest {
 		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
 		RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
 		assertThat(runtimeConfiguration.flakyRerunConfig.flakyMaxCount).isEqualTo(5);
+	}
+
+	@Test
+	public void flakyRerunByTagParsedCorrectlyIfFlakyRerunArgumentsWasPassed() {
+		List<String> arguments = new ArrayList<String>();
+		arguments.add("--flaky-rerun-threshold");
+		arguments.add("5");
+		arguments.add("--flaky-rerun-tag");
+		arguments.add("@Flaky");
+		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
+		RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
+		assertThat(runtimeConfiguration.flakyRerunConfig.flakyTag).isEqualTo("@Flaky");
 	}
 
 	@Test

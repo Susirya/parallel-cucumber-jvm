@@ -36,6 +36,7 @@ public class ArgumentsParser {
 		int flakyAttemptsCount = 0;
 		Path flakyReportPath = null;
 		int flakyMaxCount = 0;
+		String flakyTag = "";
 		FlakyRerunConfiguration flakyRerunConfig;
 		boolean dynamicFeatureDistribution = false;
 		FeatureExecutionTimeReportConfiguration featureExecutionTimeReportconfig = new FeatureExecutionTimeReportConfiguration();
@@ -51,6 +52,8 @@ public class ArgumentsParser {
 				flakyReportPath = Paths.get(parseArguments.remove(0));
 			} else if (arg.equals("--flaky-rerun-threshold")) {
 				flakyMaxCount = Integer.parseInt(parseArguments.remove(0));
+			} else if (arg.equals("--flaky-rerun-tag")) {
+				flakyTag = parseArguments.remove(0);
 			} else if (arg.equals("--dynamic-feature-distribution")) {
 				dynamicFeatureDistribution = true;
 			} else if (arg.equals("--plugin") || arg.equals("-p") || arg.equals("--format") || arg.equals("-f")) {
@@ -116,7 +119,7 @@ public class ArgumentsParser {
 				flakyReportPath = jsonReportPath.getParent();
 			}
 		}
-		flakyRerunConfig = new FlakyRerunConfiguration(flakyAttemptsCount, flakyReportPath, flakyMaxCount);
+		flakyRerunConfig = new FlakyRerunConfiguration(flakyAttemptsCount, flakyReportPath, flakyMaxCount, flakyTag);
 		RuntimeConfiguration runtimeConfiguration = new RuntimeConfiguration(numberOfThreads,
 				Collections.unmodifiableList(cucumberArgs), Collections.unmodifiableList(fullFeatureParsingArguments),
 				Collections.unmodifiableList(featurePaths), htmlReportPath, htmlReportRequired, jsonReportPath,

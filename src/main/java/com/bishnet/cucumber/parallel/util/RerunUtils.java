@@ -15,7 +15,7 @@ public class RerunUtils {
 	}
 
 	public static Path getTempFilePathWithExtention(String fileExtention) {
-		Path rerunReportReportPath = Paths.get("");;
+		Path rerunReportReportPath = Paths.get("");
 		try {
 			rerunReportReportPath = Files.createTempFile("parallelCukesTmp", fileExtention);
 			rerunReportReportPath.toFile().deleteOnExit();
