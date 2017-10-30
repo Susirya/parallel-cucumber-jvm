@@ -2,26 +2,21 @@ package com.bishnet.cucumber.parallel.report;
 
 import gherkin.deps.com.google.gson.Gson;
 import gherkin.deps.com.google.gson.GsonBuilder;
+import gherkin.deps.com.google.gson.internal.StringMap;
 import gherkin.deps.com.google.gson.reflect.TypeToken;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class JsonReportMerger {
 
 	private List<Path> reportFiles;
 	private List<Map<String, Object>> features = new ArrayList<>();
 	private Map<String, Map<String, Object>> featuresMap = new HashMap<>();
+	private Map<Integer, StringMap> scenarioMap = new HashMap<>();
 	private List<Map<String, Object>> flakyfeatures = new ArrayList<>();
 
 	public JsonReportMerger(List<Path> reportFiles) {
@@ -40,8 +35,13 @@ public class JsonReportMerger {
 		features.addAll(readSingleReport(mergedReport));
 		features.forEach(mergedFeature -> featuresMap.put((String) mergedFeature.get("id"), mergedFeature));
 		readSingleReport(reportFiles.get(0)).forEach(rerunFeature -> {
-			flakyfeatures.add(featuresMap.get((String) rerunFeature.get("id")));
-			featuresMap.put((String) rerunFeature.get("id"), rerunFeature);
+			Map<String,Object> failedFeature = featuresMap.get((String) rerunFeature.get("id"));
+			flakyfeatures.add(new LinkedHashMap<>(failedFeature));
+			List<StringMap> featureScenarioList = (ArrayList<StringMap>) failedFeature.get("elements");
+			featureScenarioList.forEach(sc -> scenarioMap.put(((Double) sc.get("line")).intValue(), sc));
+			List<StringMap> rerunScenarioList = (ArrayList<StringMap>) rerunFeature.get("elements");
+			rerunScenarioList.forEach(sc -> scenarioMap.put(((Double) sc.get("line")).intValue(), sc));
+			failedFeature.put("elements", new ArrayList<>(scenarioMap.values()));
 		});
 		features.clear();
 		features.addAll(featuresMap.values());
