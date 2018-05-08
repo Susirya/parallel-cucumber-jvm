@@ -20,6 +20,6 @@ public class FlakyRerunConfiguration {
         this.flakyAttemptsCount = flakyAttemptsCount;
         this.flakyReportPath = flakyReportPath;
         this.flakyMaxCount = flakyMaxCount;
-        this.flakyTag = flakyTag;
+        this.flakyTag = flakyTag.trim();
     }
 }

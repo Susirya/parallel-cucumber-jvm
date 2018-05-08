@@ -404,6 +404,16 @@ public class ArgumentsParserTest {
 	}
 
 	@Test
+	public void flakyRerunByTagParsedCorrectlyIfEmptyFlakyRerunTagArgumentWasPassed() {
+		List<String> arguments = new ArrayList<String>();
+		arguments.add("--flaky-rerun-tag");
+		arguments.add("     ");
+		ArgumentsParser argumentsParser = new ArgumentsParser(arguments);
+		RuntimeConfiguration runtimeConfiguration = argumentsParser.parse();
+		assertThat(runtimeConfiguration.flakyRerunConfig.flakyTag).isEqualTo("");
+	}
+
+	@Test
 	public void finalReportPathIsParsedFromRerunPluginArgument() {
 		List<String> reportArgsList = new ArrayList<String>();
 		reportArgsList.add("--plugin");
